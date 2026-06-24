@@ -886,15 +886,15 @@ def test_success_rate_matches_scripted_pattern():
 def test_latency_and_control_rate_from_timer():
     env = FakeEnv(suites=["spatial"], steps_per_episode=1, success_pattern=[True])
     policy = DummyPolicy(action_dim=7)
-    # Each act() brackets two timer() calls -> 0.02 s = 20 ms latency.
+    # Each act() brackets two timer() calls: t0=0.01, t1=0.02 -> 0.01 s = 10 ms.
     row, _ = kpi_assessment(
         policy, env, STATS, DEV,
         episodes_per_suite=1, max_steps=1,
         peak_mem_gb=2.0, disk_size_mb=900.0,
         timer=make_fake_timer(0.01),
     )
-    assert round(row.latency_ms_p50, 3) == 20.0
-    assert round(row.control_rate_hz, 3) == 50.0  # 1000 / 20 ms
+    assert round(row.latency_ms_p50, 3) == 10.0
+    assert round(row.control_rate_hz, 3) == 100.0  # 1000 / 10 ms
 
 
 def test_verdict_is_jetson_estimate_and_desktop_row_not_estimated():
